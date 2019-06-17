@@ -1,0 +1,30 @@
+// #### CLIENT SIDE #### 
+// Añade directamente material al proyecto sin necesidad de modificar angular.json
+ng add @angular/material
+
+// #### SERVER SIDE #### 
+// Permite ejecutar los cambios en el server sin reiniciarlo
+npm install --save-dev nodemon
+//Añadir en package.json un nuevo script
+"start:server": "nodemon server.js"
+//Ejecutar desde la consola
+npm run start:server
+
+// Package for uploading files
+
+
+// Permite extrar data del body post
+npm install --save body-parser
+
+// Avoid to store users with same email
+npm install --save mongoose-unique-validator
+
+// JSON Web Token
+npm install --save jsonwebtoken
+
+
+// #### DATABASE ####
+//Option 1
+npm install --save mongodb
+// Option 2 (used) - Allows to structure the data
+npm install --save mongoose
