@@ -2,6 +2,8 @@ const express = require('express');
 const Post = require('../models/post');
 // Handle image upload
 const multer = require('multer');
+// Middleware
+const checkAuth = require("../middleware/check-auth");
 
 const router = express.Router();
 
@@ -29,9 +31,10 @@ const storage = multer.diskStorage({
   }
 });
 
+// This route is protected by middleware check-auth
 // /api/posts has been added by app.js
 // URLs must be different than the ones created in the router of Angular
-router.post("", multer({
+router.post("", checkAuth, multer({
   storage: storage
 }).single("image"), (req, res, next) => {
   const url = req.protocol + '://' + req.get("host");
@@ -52,7 +55,7 @@ router.post("", multer({
   });
 });
 
-router.put("/:id", multer({
+router.put("/:id", checkAuth, multer({
   storage: storage
 }).single("image"), (req, res, next) => {
   // Get no file
@@ -116,7 +119,7 @@ router.get("/:id", (req, res, next) => {
   });
 });
 
-router.delete("/:id", (req, res, next) => {
+router.delete("/:id", checkAuth, (req, res, next) => {
   Post.deleteOne({
     _id: req.params.id
   }).then(result => {

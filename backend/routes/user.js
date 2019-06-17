@@ -6,6 +6,7 @@ const User = require('../models/user');
 
 const router = express.Router();
 
+// Routes for signup and login should not be protected. Any user should be able to reach them
 router.post("/signup", (req, res, next) => {
   bcrypt.hash(req.body.password, 10).then(hash => {
     const user = new User({
