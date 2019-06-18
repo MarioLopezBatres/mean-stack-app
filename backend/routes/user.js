@@ -38,12 +38,12 @@ router.post("/login", (req, res, next) => {
       if (!user) {
         return res.status(401).json({
           message: "Auth failed"
-        })
+        });
       }
       // User is valid in this then but not in the next one. Its required to store it
       fetchedUser = user;
       // Password is hashed in the database
-      return bcrypt.compare(req.body.password, user.password)
+      return bcrypt.compare(req.body.password, user.password);
     })
     .then(result => {
       if (!result) {
@@ -52,21 +52,22 @@ router.post("/login", (req, res, next) => {
         });
       }
       const token = jwt.sign({
-          email: fetchedUser,
-          userId: fetchedUser
+          email: fetchedUser.email,
+          userId: fetchedUser._id
         },
         // works like a password, and can be defined as you want
-        'secret_this_should_be_longer',
-        // Configer token
-        {
-          // Allows to define the length. To check more information -> implementing SPA Authentication
-          expiresIn: '1h',
-        });
+        "secret_this_should_be_longer", {
+          expiresIn: "1h"
+        }
+      );
       res.status(200).json({
         token: token,
-        expiresIn: 3600
-      })
-    }).catch(err => {
+        // Allows to define the length. To check more information -> implementing SPA Authentication
+        expiresIn: 3600,
+        userId: fetchedUser._id
+      });
+    })
+    .catch(err => {
       return res.status(401).json({
         message: "Auth failed"
       });

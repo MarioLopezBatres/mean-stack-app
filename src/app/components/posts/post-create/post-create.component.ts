@@ -54,7 +54,8 @@ export class PostCreateComponent implements OnInit {
             id: post._id,
             title: post.title,
             content: post.content,
-            imagePath: post.imagePath
+            imagePath: post.imagePath,
+            creator: post.creator
           };
           // Set value of the form when edit view (form is initialized on null)
           this.form.setValue({

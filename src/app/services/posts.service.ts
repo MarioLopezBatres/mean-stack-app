@@ -11,6 +11,7 @@ import { Router } from "@angular/router";
 @Injectable({
   providedIn: "root"
 })
+@Injectable({ providedIn: "root" })
 export class PostsService {
   private posts: Post[] = [];
   private postsUpdated = new Subject<{ posts: Post[]; postCount: number }>();
@@ -26,7 +27,8 @@ export class PostsService {
     this.httpClient
       .get<{ message: string; posts: any; maxPosts: number }>(
         "http://localhost:3000/api/posts" + queryParams
-      ) // The pipe could be removed changing post.models.ts to _id (mongoose devuelve _id)
+      )
+      // The pipe could be removed changing post.models.ts to _id (mongoose devuelve _id)
       .pipe(
         map(postData => {
           return {
@@ -46,7 +48,6 @@ export class PostsService {
       // .subscribe(new date, error, success)
       // if there is not data postData => ... = postData.posts and not transformedPost
       .subscribe(transformedPostData => {
-        console.log(transformedPostData);
         this.posts = transformedPostData.posts;
         this.postsUpdated.next({
           posts: [...this.posts],
@@ -65,6 +66,7 @@ export class PostsService {
       title: string;
       content: string;
       imagePath: string;
+      creator: string;
     }>("http://localhost:3000/api/posts/" + id);
   }
 
@@ -74,13 +76,12 @@ export class PostsService {
     postData.append("content", content);
     // image is defined as argument in posts.js within multer({storage:storage}).single("image")
     postData.append("image", image, title);
-
     this.httpClient
       .post<{ message: string; post: Post }>(
         "http://localhost:3000/api/posts",
         postData
       )
-      .subscribe(res => {
+      .subscribe(responseData => {
         this.router.navigate(["/"]);
       });
   }
@@ -104,13 +105,15 @@ export class PostsService {
         id: id,
         title: title,
         content: content,
-        imagePath: image
+        imagePath: image,
+        // Better to keep it in the frontend as null, to avoid the user to be able to manipulate it
+        creator: null
       };
     }
 
     this.httpClient
       .put("http://localhost:3000/api/posts/" + id, postData)
-      .subscribe(res => {
+      .subscribe(response => {
         // No need to update variables cause we reload the page and onInit() re-fetch the variable
         this.router.navigate(["/"]);
       });

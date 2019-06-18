@@ -17,12 +17,11 @@ export class AuthInterceptor implements HttpInterceptor {
     // Retrieve token from server
     const authToken = this.authService.getToken();
     // Clone the request before manipulating. Recommended
-    const AuthRequest = req.clone({
+    const authRequest = req.clone({
       // set() adds one header or edit the existing one
       // authorization comes from check-auth.js but it is case insensitive, as Bearer does
       headers: req.headers.set("Authorization", "Bearer " + authToken)
     });
-
-    return next.handle(AuthRequest);
+    return next.handle(authRequest);
   }
 }

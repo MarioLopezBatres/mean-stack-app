@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 // id is automatically generated my mongoose
 // title could be a String
@@ -15,8 +15,8 @@ const postSchema = mongoose.Schema({
     type: String,
     required: true
   },
+  // ref - allows to define to which model this id will belong
   creator: {
-    // ref - allows to define to which model this id will belong
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true
@@ -24,4 +24,4 @@ const postSchema = mongoose.Schema({
 });
 
 // must start by capital
-module.exports = mongoose.model('Post', postSchema);
+module.exports = mongoose.model("Post", postSchema);
