@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { Post } from "../components/posts/post.model";
+import { Post } from "../models/post.model";
 import { Subject } from "rxjs";
 // Transforms elements from array
 import { map } from "rxjs/operators";
@@ -35,7 +35,8 @@ export class PostsService {
                 title: post.title,
                 content: post.content,
                 id: post._id,
-                imagePath: post.imagePath
+                imagePath: post.imagePath,
+                creator: post.creator
               };
             }),
             maxPosts: postData.maxPosts
@@ -45,6 +46,7 @@ export class PostsService {
       // .subscribe(new date, error, success)
       // if there is not data postData => ... = postData.posts and not transformedPost
       .subscribe(transformedPostData => {
+        console.log(transformedPostData);
         this.posts = transformedPostData.posts;
         this.postsUpdated.next({
           posts: [...this.posts],

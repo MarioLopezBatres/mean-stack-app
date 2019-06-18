@@ -41,7 +41,10 @@ router.post("", checkAuth, multer({
   const post = new Post({
     title: req.body.title,
     content: req.body.content,
-    imagePath: url + "/images/" + req.file.filename
+    imagePath: url + "/images/" + req.file.filename,
+    // Part of the token in user.js. checkAuth is run here so we can get the data that was added (req.userData)
+    // Adds the id of the user who created the ID
+    creator: req.userData.userId
   });
   // Store in database. The name of the collection is always the plural of your model, in this case, posts
   post.save().then(createdPost => {
