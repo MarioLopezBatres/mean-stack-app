@@ -7,6 +7,7 @@ import { Subject } from "rxjs";
   providedIn: "root"
 })
 export class AuthService {
+  private isAuthenticated = false;
   private token: string;
   private authStatusListener = new Subject<boolean>();
 
@@ -14,6 +15,10 @@ export class AuthService {
 
   getToken() {
     return this.token;
+  }
+
+  getIsAuth() {
+    return this.isAuthenticated;
   }
 
   // Returns the status (Log in/out) as an observable to get the value
@@ -39,7 +44,11 @@ export class AuthService {
       .subscribe(response => {
         const token = response.token;
         this.token = token;
-        this.authStatusListener.next(true);
+        // Content could be null even with the possitive subscribe
+        if (token) {
+          this.isAuthenticated = true;
+          this.authStatusListener.next(true);
+        }
       });
   }
 }
