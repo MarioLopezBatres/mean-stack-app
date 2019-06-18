@@ -51,4 +51,11 @@ export class AuthService {
         }
       });
   }
+
+  logout() {
+    this.token = null;
+    this.isAuthenticated = false;
+    // Push the new value to the listeners
+    this.authStatusListener.next(false);
+  }
 }
