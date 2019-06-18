@@ -38,9 +38,14 @@ export class AuthService {
     const authData: AuthData = { email: email, password: password };
     this.httpClient
       .post("http://localhost:3000/api/user/signup", authData)
-      .subscribe(response => {
-        this.router.navigate(["/login"]);
-      });
+      .subscribe(
+        () => {
+          this.router.navigate(["/"]);
+        },
+        error => {
+          this.authStatusListener.next(false);
+        }
+      );
   }
 
   login(email: string, password: string) {
@@ -52,28 +57,33 @@ export class AuthService {
         "http://localhost:3000/api/user/login",
         authData
       )
-      .subscribe(response => {
-        const token = response.token;
-        this.token = token;
-        // Content could be null even with the possitive subscribe
-        if (token) {
-          const expiresInDuration = response.expiresIn;
-          // set timer for logout
-          this.setAuthTimer(expiresInDuration);
-          this.isAuthenticated = true;
-          // extracting user id
-          this.userId = response.userId;
-          this.authStatusListener.next(true);
-          // Save the expiration date locally to keep it after reloading page
-          const now = new Date();
-          const expirationDate = new Date(
-            now.getTime() + expiresInDuration * 1000
-          );
-          console.log(expirationDate);
-          this.saveAuthData(token, expirationDate, this.userId);
-          this.router.navigate(["/"]);
+      .subscribe(
+        response => {
+          const token = response.token;
+          this.token = token;
+          // Content could be null even with the possitive subscribe
+          if (token) {
+            const expiresInDuration = response.expiresIn;
+            // set timer for logout
+            this.setAuthTimer(expiresInDuration);
+            this.isAuthenticated = true;
+            // extracting user id
+            this.userId = response.userId;
+            this.authStatusListener.next(true);
+            // Save the expiration date locally to keep it after reloading page
+            const now = new Date();
+            const expirationDate = new Date(
+              now.getTime() + expiresInDuration * 1000
+            );
+            console.log(expirationDate);
+            this.saveAuthData(token, expirationDate, this.userId);
+            this.router.navigate(["/"]);
+          }
+        },
+        error => {
+          this.authStatusListener.next(false);
         }
-      });
+      );
   }
 
   // Automatically authenticate an user
