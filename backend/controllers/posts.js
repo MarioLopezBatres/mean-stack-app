@@ -47,7 +47,8 @@ exports.updatePost = (req, res, next) => {
       // Only the creator can edit it
       creator: req.userData.userId
     }, post).then(result => {
-      if (result.nModified > 0) {
+      // using nModified would not allow to save the update not changing any field, so it is better to use n
+      if (result.n > 0) {
         res.status(200).json({
           message: "Update successful!"
         });
