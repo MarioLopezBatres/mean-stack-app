@@ -65,9 +65,15 @@ export class PostListComponent implements OnInit, OnDestroy {
 
   onDelete(postId: string) {
     this.isLoading = true;
-    this.postsService.deletePost(postId).subscribe(() => {
-      this.postsService.getPosts(this.postsPerPage, this.currentPage);
-    });
+    this.postsService.deletePost(postId).subscribe(
+      () => {
+        this.postsService.getPosts(this.postsPerPage, this.currentPage);
+      },
+      // IMPORTANT! Way to communicate that the value of one variable has changed from a subscribe
+      () => {
+        this.isLoading = false;
+      }
+    );
   }
 
   // Used for destroying the listener

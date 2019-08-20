@@ -48,14 +48,19 @@ router.post("", checkAuth, multer({
   });
   // Store in database. The name of the collection is always the plural of your model, in this case, posts
   post.save().then(createdPost => {
-    res.status(201).json({
-      message: "Post added successfully",
-      post: {
-        ...createdPost,
-        id: createdPost._id,
-      }
+      res.status(201).json({
+        message: "Post added successfully",
+        post: {
+          ...createdPost,
+          id: createdPost._id,
+        }
+      });
+    })
+    .catch(error => {
+      res.status(500).json({
+        message: "Creating a post failed"
+      })
     });
-  });
 });
 
 router.put("/:id", checkAuth, multer({
@@ -76,22 +81,28 @@ router.put("/:id", checkAuth, multer({
     creator: req.userData.userId
   });
   Post.updateOne({
-    _id: req.params.id,
-    // Only the creator can edit it
-    creator: req.userData.userId
-  }, post).then(result => {
-    console.log(result);
-    if (result.nModified > 0) {
-      res.status(200).json({
-        message: "Update successful!"
-      });
-    } else {
-      res.status(401).json({
-        message: "Not authorized to edit the post!"
-      });
-    }
-
-  });
+      _id: req.params.id,
+      // Only the creator can edit it
+      creator: req.userData.userId
+    }, post).then(result => {
+      if (result.nModified > 0) {
+        res.status(200).json({
+          message: "Update successful!"
+        });
+      }
+      // Errors with the post. Do not find the post
+      else {
+        res.status(401).json({
+          message: "Not authorized to edit the post!"
+        });
+      }
+    })
+    // Error with server. Technical errors
+    .catch(error => {
+      res.status(500).json({
+        message: "Could not update post"
+      })
+    });
 });
 
 
@@ -109,46 +120,64 @@ router.get('', (req, res, next) => {
     postQuery.skip(pageSize * (currentPage - 1)).limit(pageSize);
   }
   postQuery.then(documents => {
-    fetchedPosts = documents;
-    return Post.count();
-  }).then(count => {
-    res.status(200).json({
-      message: "Posts fetches successfully",
-      posts: fetchedPosts,
-      maxPosts: count
+      fetchedPosts = documents;
+      return Post.count();
+    }).then(count => {
+      res.status(200).json({
+        message: "Posts fetches successfully",
+        posts: fetchedPosts,
+        maxPosts: count
+      });
+    })
+    .catch(error => {
+      res.status(500).json({
+        message: "Fetching posts failed"
+      })
     });
-  });
 });
 
 router.get("/:id", (req, res, next) => {
   Post.findById(req.params.id).then(post => {
-    if (post) {
-      res.status(200).json(post)
-    } else {
-      res.status(404).json({
-        message: 'Post not found!'
-      });
-    }
-  });
+      if (post) {
+        res.status(200).json(post)
+      } else {
+        // Post was not found
+        res.status(404).json({
+          message: 'Post not found!'
+        });
+      }
+    })
+    // Technical errors
+    .catch(error => {
+      res.status(500).json({
+        message: "Fetching post failed"
+      })
+    });
 });
 
 router.delete("/:id", checkAuth, (req, res, next) => {
   Post.deleteOne({
-    _id: req.params.id,
-    creator: req.userData.userId
-  }).then(result => {
-    console.log(result);
-    // Delete result does not have nModified attribute so it must use n
-    if (result.n > 0) {
-      res.status(200).json({
-        message: "Post deleted!"
-      });
-    } else {
-      res.status(401).json({
-        message: "Not authorized to delete the post!"
-      });
-    }
-  });
+      _id: req.params.id,
+      creator: req.userData.userId
+    }).then(result => {
+      console.log(result);
+      // Delete result does not have nModified attribute so it must use n
+      if (result.n > 0) {
+        res.status(200).json({
+          message: "Post deleted!"
+        });
+      } else {
+        res.status(401).json({
+          message: "Not authorized to delete the post!"
+        });
+      }
+    })
+    // Technical error handler
+    .catch(error => {
+      res.status(500).json({
+        message: "Fetching posts failed"
+      })
+    });
 });
 
 module.exports = router;

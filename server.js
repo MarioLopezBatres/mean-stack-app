@@ -1,3 +1,4 @@
+//Import nodejs
 const app = require("./backend/app");
 const debug = require("debug")("node-angular");
 const http = require("http");
@@ -43,6 +44,7 @@ const onListening = () => {
   debug("Listening on " + bind);
 };
 
+// 3000 for development
 const port = normalizePort(process.env.PORT || "3000");
 app.set("port", port);
 

@@ -10,7 +10,10 @@ const app = express();
 
 
 //Change "test" in connect for any name for your database. In this case, node-angular
-mongoose.connect("mongodb+srv://mariolopez:M0scqhqVsdEpLu5B@cluster0-ht50h.mongodb.net/node-angular?retryWrites=true&w=majority")
+// IP of the user may change. To overwrite it mongodb/security/network access
+mongoose.connect("mongodb+srv://mariolopez:M0scqhqVsdEpLu5B@cluster0-ht50h.mongodb.net/node-angular", {
+    useNewUrlParser: true
+  })
   .then(() => {
     console.log("Connected to database!");
   })
